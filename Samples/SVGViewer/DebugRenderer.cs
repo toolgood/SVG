@@ -37,6 +37,10 @@ namespace SVGViewer
         {
             
         }
+        public void DrawImage(Image image, RectangleF destRect, RectangleF srcRect, GraphicsUnit graphicsUnit, float opacity)
+        {
+
+        }
         public void DrawImageUnscaled(Image image, Point location)
         {
             

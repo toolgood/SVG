@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Drawing.Imaging;
 
 namespace Svg
 {
@@ -46,6 +47,19 @@ namespace Svg
         {
             _innerGraphics.DrawImage(image, destRect, srcRect, graphicsUnit);
         }
+        public void DrawImage(Image image, RectangleF destRect, RectangleF srcRect, GraphicsUnit graphicsUnit, float opacity)
+        {
+            var matrix = new ColorMatrix { Matrix33 = opacity };
+            var attributes = new ImageAttributes();
+            attributes.SetColorMatrix(matrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+            var points = new[]
+            {
+                 destRect.Location,
+                 new PointF(destRect.X + destRect.Width, destRect.Y),
+                 new PointF(destRect.X, destRect.Y + destRect.Height)
+             };
+            _innerGraphics.DrawImage(image, points, srcRect, graphicsUnit, attributes);
+        }
         public void DrawImageUnscaled(Image image, Point location)
         {
             this._innerGraphics.DrawImageUnscaled(image, location);
@@ -78,7 +92,7 @@ namespace Svg
         {
             this._innerGraphics.TranslateTransform(dx, dy, order);
         }
-        
+
 
 
         public SmoothingMode SmoothingMode

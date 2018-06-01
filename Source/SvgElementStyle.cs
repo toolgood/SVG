@@ -433,7 +433,7 @@ namespace Svg
             //styles from IE get sent through as lowercase.
             foreach (var f in fontParts)
             {
-                if (doc.FontDefns().TryGetValue(f, out sFaces)) return sFaces;
+                if (doc != null && doc.FontDefns().TryGetValue(f, out sFaces)) return sFaces;
 
                 getFamily = new Func<FontFamily, bool>(ff => string.Equals(ff.Name, f, StringComparison.OrdinalIgnoreCase));
                 family = families.FirstOrDefault(getFamily);
