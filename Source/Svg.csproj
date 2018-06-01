@@ -106,6 +106,7 @@
     <Compile Include="DataTypes\SvgTextLengthAdjust.cs" />
     <Compile Include="DataTypes\SvgTextPathMethod.cs" />
     <Compile Include="DataTypes\SvgTextPathSpacing.cs" />
+    <Compile Include="DataTypes\SvgTextTransformation.cs" />
     <Compile Include="DataTypes\XmlSpaceHandling.cs" />
     <Compile Include="Document Structure\SvgSymbol.cs" />
     <Compile Include="Exceptions\SvgMemoryException.cs" />

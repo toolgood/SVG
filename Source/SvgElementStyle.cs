@@ -13,7 +13,7 @@ namespace Svg
     public partial class SvgElement
     {
         private bool _dirty;
-        
+
         /// <summary>
         /// Gets or sets a value indicating whether this element's <see cref="Path"/> is dirty.
         /// </summary>
@@ -32,8 +32,7 @@ namespace Svg
         public void InvalidateChildPaths()
         {
             this.IsPathDirty = true;
-            foreach (SvgElement element in this.Children)
-            {
+            foreach (SvgElement element in this.Children) {
                 element.InvalidateChildPaths();
             }
         }
@@ -249,6 +248,16 @@ namespace Svg
             set { this.Attributes["font-weight"] = value; this.IsPathDirty = true; }
         }
 
+        /// <summary>
+        /// Refers to the text transformation.
+        /// </summary>
+        [SvgAttribute("text-transform", true)]
+        public virtual SvgTextTransformation TextTransformation
+        {
+            get { return (SvgTextTransformation)(this.Attributes["text-transform"] ?? SvgTextTransformation.Inherit); }
+            set { this.Attributes["text-transform"] = value; this.IsPathDirty = true; }
+        }
+
         private enum FontParseState
         {
             fontStyle,
@@ -266,8 +275,7 @@ namespace Svg
         public virtual string Font
         {
             get { return ((this.Attributes["font"] ?? string.Empty) as string); }
-            set
-            {
+            set {
                 var state = FontParseState.fontStyle;
                 var parts = value.Split(' ');
 
@@ -280,14 +288,11 @@ namespace Svg
                 string[] sizes;
                 string part;
 
-                for (int i = 0; i < parts.Length; i++)
-                {
+                for (int i = 0; i < parts.Length; i++) {
                     part = parts[i];
                     success = false;
-                    while (!success)
-                    {
-                        switch (state)
-                        {
+                    while (!success) {
+                        switch (state) {
                             case FontParseState.fontStyle:
                                 success = Enums.TryParse<SvgFontStyle>(part, out fontStyle);
                                 if (success) this.FontStyle = fontStyle;
@@ -305,13 +310,11 @@ namespace Svg
                                 break;
                             case FontParseState.fontSize:
                                 sizes = part.Split('/');
-                                try
-                                {
+                                try {
                                     fontSize = (SvgUnit)(new SvgUnitConverter().ConvertFromInvariantString(sizes[0]));
                                     success = true;
                                     this.FontSize = fontSize;
-                                }
-                                catch { }
+                                } catch { }
                                 state++;
                                 break;
                             case FontParseState.fontFamilyNext:
@@ -321,8 +324,7 @@ namespace Svg
                         }
                     }
 
-                    switch (state)
-                    {
+                    switch (state) {
                         case FontParseState.fontFamilyNext:
                             this.FontFamily = string.Join(" ", parts, i + 1, parts.Length - (i + 1));
                             i = int.MaxValue - 2;
@@ -339,7 +341,7 @@ namespace Svg
                 this.IsPathDirty = true;
             }
         }
-        
+
         /// <summary>
         /// Get the font information based on data stored with the text object or inherited from the parent.
         /// </summary>
@@ -349,25 +351,20 @@ namespace Svg
             // Get the font-size
             float fontSize;
             var fontSizeUnit = this.FontSize;
-            if (fontSizeUnit == SvgUnit.None || fontSizeUnit == SvgUnit.Empty)
-            {
+            if (fontSizeUnit == SvgUnit.None || fontSizeUnit == SvgUnit.Empty) {
                 fontSize = 1.0f;
-            }
-            else
-            {
+            } else {
                 fontSize = fontSizeUnit.ToDeviceValue(renderer, UnitRenderingType.Vertical, this);
             }
 
             var family = ValidateFontFamily(this.FontFamily, this.OwnerDocument);
             var sFaces = family as IEnumerable<SvgFontFace>;
 
-            if (sFaces == null)
-            {
+            if (sFaces == null) {
                 var fontStyle = System.Drawing.FontStyle.Regular;
 
                 // Get the font-weight
-                switch (this.FontWeight)
-                {
+                switch (this.FontWeight) {
                     //Note: Bold is not listed because it is = W700.
                     case SvgFontWeight.Bolder:
                     case SvgFontWeight.W600:
@@ -379,8 +376,7 @@ namespace Svg
                 }
 
                 // Get the font-style
-                switch (this.FontStyle)
-                {
+                switch (this.FontStyle) {
                     case SvgFontStyle.Italic:
                     case SvgFontStyle.Oblique:
                         fontStyle |= System.Drawing.FontStyle.Italic;
@@ -388,8 +384,7 @@ namespace Svg
                 }
 
                 // Get the text-decoration
-                switch (this.TextDecoration)
-                {
+                switch (this.TextDecoration) {
                     case SvgTextDecoration.LineThrough:
                         fontStyle |= System.Drawing.FontStyle.Strikeout;
                         break;
@@ -399,19 +394,15 @@ namespace Svg
                 }
 
                 var ff = family as FontFamily;
-                if (!ff.IsStyleAvailable(fontStyle))
-                {
+                if (!ff.IsStyleAvailable(fontStyle)) {
                     // Do Something
                 }
 
                 // Get the font-family
                 return new GdiFontDefn(new System.Drawing.Font(ff, fontSize, fontStyle, System.Drawing.GraphicsUnit.Pixel));
-            }
-            else
-            {
+            } else {
                 var font = sFaces.First().Parent as SvgFont;
-                if (font == null)
-                {
+                if (font == null) {
                     var uri = sFaces.First().Descendants().OfType<SvgFontFaceUri>().First().ReferencedElement;
                     font = OwnerDocument.IdManager.GetElementById(uri) as SvgFont;
                 }
@@ -431,8 +422,7 @@ namespace Svg
 
             // Find a the first font that exists in the list of installed font families.
             //styles from IE get sent through as lowercase.
-            foreach (var f in fontParts)
-            {
+            foreach (var f in fontParts) {
                 if (doc != null && doc.FontDefns().TryGetValue(f, out sFaces)) return sFaces;
 
                 getFamily = new Func<FontFamily, bool>(ff => string.Equals(ff.Name, f, StringComparison.OrdinalIgnoreCase));
@@ -441,8 +431,7 @@ namespace Svg
                 family = PrivateFonts.Families.FirstOrDefault(getFamily);
                 if (family != null) return family;
 
-                switch (f.ToLower())
-                {
+                switch (f.ToLower()) {
                     case "serif":
                         return System.Drawing.FontFamily.GenericSerif;
                     case "sans-serif":

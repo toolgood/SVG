@@ -18,11 +18,9 @@ namespace ExCSS
 
         public TermList(params Term[] terms)
         {
-            for(var i = 0; i < terms.Length; ++i)
-            {
+            for (var i = 0; i < terms.Length; ++i) {
                 AddTerm(terms[i]);
-                if(i != terms.Length-1)
-                {
+                if (i != terms.Length - 1) {
                     AddSeparator(DefaultSeparator);
                 }
             }
@@ -30,8 +28,7 @@ namespace ExCSS
 
         public void AddTerm(Term term)
         {
-            if (_items.Count != _separator.Count)
-            {
+            if (_items.Count != _separator.Count) {
                 throw new NotSupportedException("Must call AddTerm AddSeparator in that order");
             }
 
@@ -40,25 +37,21 @@ namespace ExCSS
 
         public void AddSeparator(TermSeparator termSeparator)
         {
-            switch(termSeparator)
-            {
-                case(TermSeparator.Comma):
-                {
-                    AddSeparator(GrammarSegment.Comma);
-                    break;
-                }
-	             case(TermSeparator.Space):
-                {
-                    AddSeparator(GrammarSegment.Whitespace);
-                    break;
-                }
+            switch (termSeparator) {
+                case (TermSeparator.Comma): {
+                        AddSeparator(GrammarSegment.Comma);
+                        break;
+                    }
+                case (TermSeparator.Space): {
+                        AddSeparator(GrammarSegment.Whitespace);
+                        break;
+                    }
             }
         }
 
         internal void AddSeparator(GrammarSegment termSepertor)
         {
-            if (_items.Count != _separator.Count + 1)
-            {
+            if (_items.Count != _separator.Count + 1) {
                 throw new NotSupportedException("Must call AddTerm AddSeparator in that order");
             }
 
@@ -71,7 +64,7 @@ namespace ExCSS
         }
 
         [IndexerName("ListItems")]
-        public Term this [int index]
+        public Term this[int index]
         {
             //return index >= 0 && index < _items.Count ? _items[index] : null; 
             get { return _items[index]; }
@@ -86,15 +79,13 @@ namespace ExCSS
         {
             var builder = new StringBuilder();
 
-            for (var i = 0; i < _items.Count; i++)
-            {
+            for (var i = 0; i < _items.Count; i++) {
                 builder.Append(_items[i]);
 
                 if (i == _separator.Count)
                     break;
 
-                switch (_separator[i])
-                {
+                switch (_separator[i]) {
                     case GrammarSegment.Whitespace:
                         builder.Append(" ");
                         break;
@@ -118,6 +109,13 @@ namespace ExCSS
         {
             Comma,
             Space
+        }
+        internal void SetLastTerm(Term term)
+        {
+            if (Length == 0)
+                AddTerm(term);
+            else
+                _items[Length - 1] = term;
         }
     }
 }

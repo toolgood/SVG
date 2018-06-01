@@ -131,14 +131,14 @@ namespace ExCSS
 
         private bool AddTerm(Term value)
         {
+
             if (_isFraction)
             {
                 if (_terms.Length > 0)
                 {
-                    value = new PrimitiveTerm(UnitType.Unknown, _terms[0] + "/" + value);
-                    _terms = new TermList();
+                    value = new PrimitiveTerm(UnitType.Unknown, _terms[_terms.Length - 1] + "/" + value);
                 }
-
+                _terms.SetLastTerm(value);
                 _isFraction = false;
             }
 
